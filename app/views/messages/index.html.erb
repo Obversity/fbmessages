@@ -1,0 +1,13 @@
+<% @messages.each do |message| %>
+  <p>
+    <strong>
+      <%= message.person.name %>
+    </strong>
+    (<%= message.sent_at %>)
+  </p>
+  <%= simple_format message.content %>
+  <hr>
+<% end %>
+
+
+<%= paginate @messages %>

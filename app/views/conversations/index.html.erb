@@ -1,0 +1,7 @@
+<ul>
+  <% @conversations.each do |conversation| %>
+    <li>
+      <%= link_to conversation.title, conversation_messages_path(conversation) %>
+    </li>
+  <% end %>
+</ul>

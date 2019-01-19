@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  conversation: one
+  participant: one
+  content: MyText
+  message_type: MyString
+  sent_at: 2019-01-19 22:22:09
+
+two:
+  conversation: two
+  participant: two
+  content: MyText
+  message_type: MyString
+  sent_at: 2019-01-19 22:22:09

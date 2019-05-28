@@ -1,11 +1,30 @@
+<%
+  start_date = 10.years.ago
+  start_date = DateTime.parse(params[:start_date]) if params[:start_date]
+  end_date   = DateTime.now
+  end_date   = DateTime.parse(params[:end_date]) if params[:end_date].present?
+  @messages        = @messages.where(sent_at: start_date..end_date)
+%>
+
+<%= form_tag(request.path, method: :get) do %>
+  <%= label_tag(:start_date, "Query") %>
+  <%= text_field_tag(:query, params[:query]) %>
+  <%= label_tag(:start_date, "Start date") %>
+  <%= text_field_tag(:start_date, start_date.to_date, placeholder: start_date.to_date) %>
+  <%= label_tag(:end_date, "End date") %>
+  <%= text_field_tag(:end_date, end_date.to_date, placeholder: end_date.to_date) %>
+  <%= submit_tag("Search") %>
+<% end %>
+
 <% @messages.each do |message| %>
-  <p>
+  <p id="<%= message.id %>">
     <strong>
       <%= message.person.name %>
     </strong>
     (<%= message.sent_at %>)
+    <%= link_to "View context", conversation_messages_path(@conversation, :messages, to_record: message.id, anchor: message.id, highlight: params[:query]) if params[:query].present? %>
   </p>
-  <%= simple_format message.content %>
+  <%= highlight_search(simple_format(message.content), params[:highlight]) %>
   <hr>
 <% end %>
 

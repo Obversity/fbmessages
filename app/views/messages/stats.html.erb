@@ -14,6 +14,10 @@
   message_data = participants.map { |participant| [ participant.person, messages.where(participant_id: participant.id).not_photos] }
 %>
 
+<p>
+  <%= link_to "Back to conversations", conversations_path %>
+</p>
+
 <%= form_tag(request.path, method: :get) do %>
   <%= label_tag(:period, "Granularity") %>
   <%= select_tag(:period, options_for_select([:hour, :day, :week, :month], period)) %>

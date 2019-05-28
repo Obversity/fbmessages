@@ -6,6 +6,11 @@
   @messages        = @messages.where(sent_at: start_date..end_date)
 %>
 
+<h2>Conversation between <%= @conversation.participants.map(&:name).to_sentence %></h2>
+<p>
+  <%= link_to "View stats", stats_conversation_messages_path(@conversation) %>
+</p>
+
 <%= form_tag(request.path, method: :get) do %>
   <%= label_tag(:start_date, "Query") %>
   <%= text_field_tag(:query, params[:query]) %>

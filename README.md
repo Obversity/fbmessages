@@ -1,10 +1,10 @@
-## Purpose
+# Purpose
 
 To import your facebook messages (downloaded via the [Download Your Information](https://www.facebook.com/settings?tab=your_facebook_information) facebook feature)
 and explore the data.
  
 
-### Status
+## Status
 
 This is very much a work in progress, and is not intended for public consumption. 
 Setup requires some knowledge of Ruby on Rails, and I can't vouch for the quality of the code!

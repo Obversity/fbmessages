@@ -3,6 +3,7 @@
 To import your facebook messages (downloaded via the [Download Your Information](https://www.facebook.com/settings?tab=your_facebook_information) facebook feature)
 and explore the data.
  
+ ![Stats](https://i.imgur.com/UVb8V1y.png)
 
 ## Status
 

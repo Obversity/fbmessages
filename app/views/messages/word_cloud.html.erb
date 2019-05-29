@@ -1,0 +1,60 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-scale/1.0.7/d3-scale.min.js"></script>
+
+
+<%
+  rejects = %w(to of in for on with at by from up about into over after
+               the and a that I it not he as you this but his they her she or an will my one all would there their
+               be have do get go that's i'll i've than you'd i'd say said out lot now thing your did
+               )
+  words = @conversation.messages
+                  .order("RANDOM()")
+                  .limit(20000)
+                  .pluck(:content)
+                  .join(" ").split(/[^A-Za-z']/)
+                  .reject(&:blank?)
+                  .map(&:strip)
+                  .reject { |word| word.downcase.in?(rejects) }
+                  .select { |word| word.length > 1 }
+                  .inject({}){ |hash, word| hash[word.downcase] ||= 1; hash[word.downcase] +=1; hash }
+                  .select { |_, count| count > 1 }
+                  .sort_by { |_, count| count }.reverse
+                  .first(1000)
+
+  words = words.map {|word, count| { text: word, size: count } }.to_json
+%>
+
+<script type="text/javascript" charset="utf-8">
+  var words = <%= raw words %>;
+
+  var layout = d3.layout.cloud()
+      .size([window.innerWidth - 20, window.innerHeight - 20])
+      .words(words)
+      .padding(1)
+      .font("Impact")
+      .fontSize(function(d) { return d.size; })
+
+
+  layout.on("end", draw.bind(null, layout));
+  layout.start()
+
+
+  function draw(layout, words) {
+      d3.select("body").append("svg")
+          .attr("width", layout.size()[0])
+          .attr("height", layout.size()[1])
+          .append("g")
+          .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+          .selectAll("text")
+          .data(words)
+          .enter().append("text")
+          .style("font-size", function(d) { return d.size + "px"; })
+          .style("font-family", "Impact")
+          .attr("text-anchor", "middle")
+          .attr("transform", function(d) {
+              return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+          })
+          .text(function(d) { return d.text; });
+  }
+</script>

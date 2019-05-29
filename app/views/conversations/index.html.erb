@@ -4,6 +4,8 @@
       <%= link_to conversation.title, conversation_messages_path(conversation) %>
       |
       <%= link_to "Stats", stats_conversation_messages_path(conversation) %>
+      |
+      <%= link_to "Word Cloud", word_cloud_conversation_messages_path(conversation) %>
     </li>
   <% end %>
 </ul>

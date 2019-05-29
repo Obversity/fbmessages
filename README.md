@@ -43,7 +43,8 @@ Once it's loaded, visit [http://localhost:3000](http://localhost:3000) and begin
 ## Todo
 
 In no particular order:
-- word cloud
+- ~~word cloud~~
+  - basic version done but could do with some love
 - time of day / day of week stats
 - response time stats
 - get images working in chat

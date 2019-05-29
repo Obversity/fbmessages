@@ -16,4 +16,8 @@ class MessagesController < ApplicationController
   def stats
     @conversation = Conversation.find(params[:conversation_id])
   end
+
+  def word_cloud
+    @conversation = Conversation.find(params[:conversation_id])
+  end
 end

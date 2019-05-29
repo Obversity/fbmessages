@@ -69,7 +69,3 @@
 
 <h2>"I miss you"s</h2>
 <%= line_chart message_data.map { |person, messages| { name: person.name, data: messages.where('content ilike ? or content ilike ? or content ilike ?', '%I miss you%', "%miss u%", "%miss you%").group_by_period(period, :sent_at).count } }, colors: colors %>
-
-<%
-  words = messages.limit(200).pluck(:content).join(" ").split(/[^A-Za-z]/).reject(&:blank?).select{|word| word.length > 1 }.inject({}){ |hash, word| hash[word.downcase] ||= 1; hash[word.downcase] +=1; hash }
-%>

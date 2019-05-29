@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     resources :messages do
       collection do
         get :stats
+        get 'word-cloud', to: 'messages#word_cloud'
       end
     end
   end

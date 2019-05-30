@@ -8,7 +8,7 @@
 
 <h2>Conversation between <%= @conversation.participants.map(&:name).to_sentence %></h2>
 <p>
-  <%= link_to "View Stats", stats_conversation_messages_path(@conversation) %>
+  <%= link_to "View Stats", stats_conversation_messages_path(@conversation, query: params[:query]) %>
   |
   <%= link_to "Word Cloud", word_cloud_conversation_messages_path(@conversation) %>
 </p>

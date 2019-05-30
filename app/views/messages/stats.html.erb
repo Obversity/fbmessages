@@ -7,7 +7,9 @@
   period     = :month
   period     = params[:period].to_sym if params[:period].present?
 
-  messages        = @conversation.messages.where(sent_at: start_date..end_date)
+  messages = @conversation.messages.where(sent_at: start_date..end_date)
+  messages = messages.search(params[:query]) if params[:query]
+
   participant_ids = messages.distinct(:participant_id).pluck(:participant_id)
   participants    = Participant.where(id: participant_ids).includes(:person)
 
@@ -21,6 +23,8 @@
 <%= form_tag(request.path, method: :get) do %>
   <%= label_tag(:period, "Granularity") %>
   <%= select_tag(:period, options_for_select([:hour, :day, :week, :month], period)) %>
+  <%= label_tag(:query, "Keyword") %>
+  <%= text_field_tag(:query, params[:query]) %>
   <%= label_tag(:start_date, "Start date") %>
   <%= text_field_tag(:start_date, start_date.to_date, placeholder: start_date.to_date) %>
   <%= label_tag(:end_date, "End date") %>
@@ -31,6 +35,10 @@
 <h2>Overall stats</h2>
 
 <p>Bewteen dates <%= start_date.to_date %> and <%= end_date.to_date %></p>
+
+<% if params[:query] %>
+  <p>For messages with keyword "<%= params[:query] %>"</p>
+<% end %>
 
 <table>
   <tr>
@@ -63,9 +71,3 @@
   Message total length (characters)
 </h2>
 <%= line_chart message_data.map { |person, messages| { name: person.name, data: messages.group_by_period(period, :sent_at).sum('length(content)') } }, colors: colors %>
-
-<h2>"I love you"s</h2>
-<%= line_chart message_data.map { |person, messages| { name: person.name, data: messages.where('content ilike ?', '%I love you%').group_by_period(period, :sent_at).count } }, colors: colors %>
-
-<h2>"I miss you"s</h2>
-<%= line_chart message_data.map { |person, messages| { name: person.name, data: messages.where('content ilike ? or content ilike ? or content ilike ?', '%I miss you%', "%miss u%", "%miss you%").group_by_period(period, :sent_at).count } }, colors: colors %>

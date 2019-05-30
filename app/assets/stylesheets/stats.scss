@@ -1,0 +1,17 @@
+.pie-charts {
+  display: grid;
+  grid-template-columns: calc(100%  /3) calc(100%  /3) calc(100%  /3);
+  margin: 25px auto;
+}
+
+.pie-charts > div {
+  text-align: center;
+}
+
+.line-charts {
+  margin: auto 20px 60px 20px;
+}
+
+.line-charts > div {
+  margin-top: 50px;
+}

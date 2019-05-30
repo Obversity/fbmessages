@@ -1,5 +1,9 @@
 <%
-  colors     = ["#1ee8e8", "#ef86d0"]
+  default_options = {
+    colors: ["#1ee8e8", "#ef86d0"],
+    height: "250px"
+  }
+
   start_date = 10.years.ago
   start_date = DateTime.parse(params[:start_date]) if params[:start_date]
   end_date   = DateTime.now
@@ -8,12 +12,12 @@
   period     = params[:period].to_sym if params[:period].present?
 
   messages = @conversation.messages.where(sent_at: start_date..end_date)
-  messages = messages.search(params[:query]) if params[:query]
+  messages = messages.search(params[:query]) if params[:query].present?
 
   participant_ids = messages.distinct(:participant_id).pluck(:participant_id)
   participants    = Participant.where(id: participant_ids).includes(:person)
 
-  message_data = participants.map { |participant| [ participant.person, messages.where(participant_id: participant.id).not_photos] }
+  message_data = participants.map { |participant| [ participant.person, messages.where(participant_id: participant.id)] }
 %>
 
 <p>
@@ -36,38 +40,44 @@
 
 <p>Bewteen dates <%= start_date.to_date %> and <%= end_date.to_date %></p>
 
-<% if params[:query] %>
+<% if params[:query].present? %>
   <p>For messages with keyword "<%= params[:query] %>"</p>
 <% end %>
 
-<table>
-  <tr>
-    <td>Total message count</td>
-    <td><%= number_with_delimiter messages.count %></td>
-  </tr>
-  <tr>
-    <td>Average message length</td>
-    <td><%= messages.not_photos.average('length(content)') %></td>
-  </tr>
-  <tr>
-    <td>Words sent</td>
-    <td><%= number_with_delimiter messages.not_photos.sum("array_length(regexp_split_to_array(content, '\\s+'), 1)") %></td>
-  </tr>
-  <tr>
-    <td>Photos sent</td>
-    <td><%= number_with_delimiter messages.photos.count %></td>
-  </tr>
-</table>
+<div class="pie-charts">
+  <div>
+    <h3>Photos sent</h3>
+    <p><%= number_with_delimiter messages.photos.count %></p>
+    <%= pie_chart message_data.map { |person, messages| [person.name, messages.photos.count] }, default_options %>
+  </div>
+  <div>
+    <h3>Videos sent</h3>
+    <p><%= number_with_delimiter messages.videos.count %></p>
+    <%= pie_chart message_data.map { |person, messages| [person.name, messages.videos.count] }, default_options %>
+  </div>
+  <div>
+    <h3>Voice messages sent</h3>
+    <p><%= number_with_delimiter messages.voice_messages.count %></p>
+    <%= pie_chart message_data.map { |person, messages| [person.name, messages.voice_messages.count] }, default_options %>
+  </div>
+</div>
 
-<h2>
-  Number of messages
-</h2>
-<%= line_chart message_data.map { |person, messages| { name: person.name, data: messages.group_by_period(period, :sent_at).count } }, colors: colors %>
-<h2>
-  Message averge length (characters)
-</h2>
-<%= line_chart message_data.map { |person, messages| { name: person.name, data: messages.group_by_period(period, :sent_at).average('length(content)') } }, colors: colors %>
-<h2>
-  Message total length (characters)
-</h2>
-<%= line_chart message_data.map { |person, messages| { name: person.name, data: messages.group_by_period(period, :sent_at).sum('length(content)') } }, colors: colors %>
+
+<div class="line-charts">
+  <div>
+    <h3>Number of messages</h3>
+    <p><%= number_with_delimiter messages.count %></p>
+    <%= line_chart message_data.map { |person, messages| { name: person.name, data: messages.group_by_period(period, :sent_at).count } }, default_options %>
+  </div>
+  <div>
+    <h3>Message averge length (characters)</h3>
+    <p><%= messages.not_photos.average('length(content)') %></p>
+    <%= line_chart message_data.map { |person, messages| { name: person.name, data: messages.group_by_period(period, :sent_at).average('length(content)') } }, default_options %>
+  </div>
+  <div>
+    <h3>Message total length (characters)</h3>
+    <p>Words: <%= number_with_delimiter messages.not_photos.sum("array_length(regexp_split_to_array(content, '\\s+'), 1)") %></p>
+    <p>Characters: <%= number_with_delimiter messages.not_photos.sum("length(content)") %></p>
+    <%= line_chart message_data.map { |person, messages| { name: person.name, data: messages.group_by_period(period, :sent_at).sum('length(content)') } }, default_options %>
+  </div>
+</div>

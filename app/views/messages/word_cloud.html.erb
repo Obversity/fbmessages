@@ -39,7 +39,7 @@
   layout.on("end", draw.bind(null, layout));
   layout.start()
 
-
+  // stolen from https://github.com/jasondavies/d3-cloud/blob/master/examples/browserify.js
   function draw(layout, words) {
       d3.select("body").append("svg")
           .attr("width", layout.size()[0])
